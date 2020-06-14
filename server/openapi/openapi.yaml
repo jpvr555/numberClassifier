@@ -1,0 +1,82 @@
+openapi: 3.0.0
+info:
+  description: An all inclusive API for a simple number classifier
+  title: Number Classifier API
+  version: 1.0.0
+servers:
+- url: https://example.io/v1
+tags:
+- description: API calls related to inferences.
+  name: Inference
+paths:
+  /inference:
+    get:
+      description: Lets the user retrieve all previous inferences.
+      operationId: wsgi.inference_get
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/inference'
+                type: array
+          description: Successfully returned all inferences.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_default'
+          description: unexpected error.
+      tags:
+      - Inference
+    post:
+      description: Lets the user provide an image to start an inference.
+      operationId: wsgi.inference_post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/file'
+        description: File to be inferenced.
+        required: true
+      responses:
+        "200":
+          description: Successfully inferenced.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inference'
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_default'
+          description: unexpected error.
+      tags:
+      - Inference
+
+components:
+  schemas:
+    inference:
+      properties:
+        img_url:
+          type: string
+        prediction:
+          type: number
+        confidence:
+          type: number
+      type: object
+    file:
+      properties:
+        file_name:
+          format: binary
+          type: string
+      type: object
+    inline_response_default:
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+
